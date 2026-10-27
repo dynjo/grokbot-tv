@@ -1,0 +1,20 @@
+{
+  "id": "com.grokbot.overlay",
+  "version": "1.6.0",
+  "vendor": "grokbot",
+  "type": "web",
+  "main": "index.html",
+  "title": "Grokbot",
+  "icon": "icon.png",
+  "largeIcon": "icon.png",
+  "iconColor": "#101014",
+  "appDescription": "Voice answers from the grokbot daemon",
+  "defaultWindowType": "overlay",
+  "transparent": true,
+  "visible": false,
+  "handlesRelaunch": true,
+  "disableBackHistoryAPI": true,
+  "noSplashOnLaunch": true,
+  "spinnerOnLaunch": false,
+  "uiRevision": 2
+}

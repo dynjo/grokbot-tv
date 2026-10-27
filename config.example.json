@@ -1,0 +1,20 @@
+{
+  "xai_api_key": "",
+  "chat_model": "grok-4.7",
+  "stt_model": "grok-voice-transcribe-2.0",
+  "language": "en",
+  "tts": true,
+  "tts_voice": "iris",
+  "replace_lg_voice": true,
+  "mute_while_listening": false,
+  "end_silence_sec": 0.9,
+  "max_listen_sec": 12,
+  "no_speech_sec": 5,
+  "min_speech_rms": 300,
+  "follow_up_sec": 6,
+  "linger_sec": 6,
+  "grok_bot": {
+    "name": "",
+    "agent_id": ""
+  }
+}

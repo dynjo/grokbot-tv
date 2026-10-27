@@ -1,0 +1,122 @@
+:root {
+  --panel: rgba(14, 14, 20, 0.96);
+  --edge: rgba(255, 255, 255, 0.12);
+  --text: #f4f4f7;
+  --muted: #a3a3b2;
+  --accent: #8fb4ff;
+  --error: #ff9a8f;
+  --level: 0;
+}
+
+html, body {
+  margin: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: transparent;
+  font-family: "LG Smart UI", "Museo Sans", "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+}
+
+/* A bottom sheet, so whatever is playing stays visible above it. */
+.panel {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  width: 1240px;
+  margin-left: -620px;
+  box-sizing: border-box;
+  padding: 48px 64px 52px;
+  border-radius: 36px;
+  background: var(--panel);
+  border: 2px solid var(--edge);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+  transform: translateY(40px);
+  opacity: 0;
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.panel.shown {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+/* The bot's face. A glow behind it follows the mic level while listening. */
+.face {
+  position: relative;
+  width: 156px;
+  height: 156px;
+  margin-right: 32px;
+  flex: none;
+}
+
+.face::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143, 180, 255, 0.5), rgba(143, 180, 255, 0) 68%);
+  transform: scale(calc(0.6 + var(--level) * 0.9));
+  opacity: 0;
+  transition: transform 90ms linear, opacity 200ms;
+  content: "";
+}
+
+.listening .face::before { opacity: 1; }
+
+/* Its own layer, so its per-frame repaints don't touch the panel. */
+#bot {
+  position: relative;
+  display: block;
+  will-change: transform;
+}
+
+.status {
+  font-size: 34px;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.error .status { color: var(--error); }
+
+.transcript {
+  margin-top: 26px;
+  font-size: 40px;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.transcript:empty,
+.answer:empty,
+.actions:empty { display: none; }
+
+.actions { margin-top: 18px; }
+
+.chip {
+  display: inline-block;
+  margin-right: 14px;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: rgba(143, 180, 255, 0.16);
+  color: var(--accent);
+  font-size: 28px;
+}
+
+.answer {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 2px solid var(--edge);
+  font-size: 38px;
+  line-height: 1.38;
+  color: #dcdce4;
+  max-height: 420px;
+  overflow: hidden;
+  white-space: pre-line;
+}

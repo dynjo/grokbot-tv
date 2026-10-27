@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Grokbot</title>
+  <link rel="stylesheet" href="css/overlay.css">
+</head>
+<body>
+  <div id="panel" class="panel">
+    <div class="header">
+      <div id="face" class="face">
+        <morph-bot id="bot" state="waking" shape="blob" size="156" material="gradient" gradient-preset="blue-hour" decorative></morph-bot>
+      </div>
+      <div id="status" class="status">Listening…</div>
+    </div>
+    <div id="transcript" class="transcript"></div>
+    <div id="actions" class="actions"></div>
+    <div id="answer" class="answer"></div>
+  </div>
+  <script src="js/vendor/morph-bot.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
