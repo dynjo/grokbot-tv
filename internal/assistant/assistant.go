@@ -384,8 +384,9 @@ func (a *Assistant) turn(ctx, parent context.Context, pcm []int16, followUp bool
 	}
 	a.hub.Send("transcript", map[string]any{"text": text}, true)
 	if a.botEnabled() {
-		more := a.handOver(ctx, tctx, text, !a.introduced, live)
-		a.introduced = true
+		intro := !a.introduced
+		a.introduced = true // the user is talking: [[tv look]] is allowed
+		more := a.handOver(ctx, tctx, text, intro, live)
 		interrupted()
 		return more
 	}

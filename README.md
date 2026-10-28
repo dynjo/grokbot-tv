@@ -90,7 +90,7 @@ On the TV:
 ```sh
 tail -f /tmp/grokbot.log                       # sessions, transcripts, answers, tool calls
 wget -qO- http://127.0.0.1:8679/status         # busy, overlays connected
-wget -qO- http://127.0.0.1:8679/trigger        # start a session without the button (the remote must be awake)
+wget -qO- --post-data= http://127.0.0.1:8679/trigger   # start a session without the button (the remote must be awake)
 luna-send -n 1 luna://com.webos.applicationManager/launch '{"id":"com.grokbot.overlay","params":{"demo":true}}'
                                                # cycle the face through its states and log the frame rate
 ```

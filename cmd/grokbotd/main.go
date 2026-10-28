@@ -38,10 +38,10 @@ func main() {
 
 	hub := bridge.NewHub()
 	asst := assistant.New(cfg, hub)
-	hub.Handle("/trigger", func(w http.ResponseWriter, r *http.Request) {
+	hub.Handle("/trigger", bridge.LocalOnly(func(w http.ResponseWriter, r *http.Request) {
 		asst.Trigger("http")
 		fmt.Fprintln(w, `{"ok":true}`)
-	})
+	}))
 	hub.Handle("/status", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"service":          "grokbot",

@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 )
 
 const wsGUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
@@ -96,10 +97,36 @@ func (h *Hub) drop(c *wsConn) {
 	c.conn.Close()
 }
 
+// overlayOrigin reports whether a WebSocket comes from the overlay app.
+// webOS web apps are loaded from file://; web pages in the TV's browser
+// (which can also reach 127.0.0.1) have an http(s) origin and are refused,
+// since the socket carries what the user says and can control sessions.
+func overlayOrigin(origin string) bool {
+	return origin == "file://" || origin == "null"
+}
+
+// LocalOnly wraps a handler for tools on the TV itself (wget, curl): it
+// only takes POST, and refuses requests from web pages, which carry an
+// Origin header.
+func LocalOnly(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.Header.Get("Origin") != "" {
+			http.Error(w, "POST from the TV only", http.StatusForbidden)
+			return
+		}
+		f(w, r)
+	}
+}
+
 func (h *Hub) serveWS(w http.ResponseWriter, r *http.Request) {
 	if !strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"service":"grokbot"}`)
+		return
+	}
+	if origin := r.Header.Get("Origin"); !overlayOrigin(origin) {
+		log.Printf("bridge: refused WebSocket from origin %q", origin)
+		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
 	key := r.Header.Get("Sec-WebSocket-Key")
@@ -170,6 +197,8 @@ func (c *wsConn) writeText(p []byte) error { return c.writeFrame(0x1, p) }
 func (c *wsConn) writeFrame(op byte, p []byte) error {
 	c.wmu.Lock()
 	defer c.wmu.Unlock()
+	// A stuck client must not block broadcasts to the others.
+	c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	hdr := []byte{0x80 | op}
 	switch n := len(p); {
 	case n < 126:
@@ -212,8 +241,8 @@ func (c *wsConn) readFrame() (byte, []byte, error) {
 			}
 			n = binary.BigEndian.Uint64(b[:])
 		}
-		if n > 1<<20 {
-			return 0, nil, errors.New("ws: frame too large")
+		if n > 1<<20 || uint64(len(msg))+n > 1<<20 {
+			return 0, nil, errors.New("ws: message too large")
 		}
 		var mask [4]byte
 		if h[1]&0x80 != 0 {

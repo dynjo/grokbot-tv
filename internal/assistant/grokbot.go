@@ -307,6 +307,13 @@ func (a *Assistant) runCommand(ctx context.Context, cmd string) bool {
 		log.Printf("grokbot: unknown TV command %q", cmd)
 		return false
 	}
+	// The agent reads email and the web, so its messages can carry
+	// someone else's words. Only send the screen off the TV when the user
+	// is talking to it in this conversation.
+	if name == "look_at_screen" && !a.introduced {
+		log.Printf("grokbot: refused [[tv look]] outside a conversation the user started")
+		return false
+	}
 	buf, _ := json.Marshal(args)
 	var call xai.ToolCall
 	call.Function.Name, call.Function.Arguments = name, string(buf)

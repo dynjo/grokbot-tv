@@ -9,6 +9,8 @@
 # Boot hooks run with an almost empty PATH; grokbotd needs luna-send
 # (/usr/bin) and systemctl (/bin).
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+# The log holds what the user says and the answers; keep it root-only.
+umask 077
 
 DIR=$(cd "$(dirname "$0")" && pwd)
 BIN="$DIR/grokbotd"
@@ -75,6 +77,7 @@ while [ ! -f "$STOP" ]; do
     mv -f "$LOG" "$LOG.1"
   fi
   started=$(date +%s)
+  touch "$LOG" && chmod 600 "$LOG"
   "$BIN" -config "$CONFIG" >>"$LOG" 2>&1 &
   child=$!
   wait "$child"
