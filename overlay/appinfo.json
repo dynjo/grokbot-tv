@@ -1,6 +1,6 @@
 {
   "id": "com.grokbot.overlay",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "vendor": "grokbot",
   "type": "web",
   "main": "index.html",

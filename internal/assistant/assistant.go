@@ -202,7 +202,7 @@ func (a *Assistant) session(parent context.Context, done chan<- struct{}, msgs [
 			a.returnTo = fg
 			a.mu.Unlock()
 		}
-		if err := bridge.Launch(parent, a.cfg.OverlayApp, map[string]any{"source": "grokbot"}); err != nil {
+		if err := bridge.Launch(parent, a.cfg.OverlayApp, map[string]any{"source": "grokbot", "key": a.hub.Key}); err != nil {
 			log.Printf("session: launch overlay: %v", err)
 		}
 	}()

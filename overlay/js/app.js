@@ -166,8 +166,23 @@
     }
   }
 
+  // The daemon passes a key in the launch params; the socket refuses
+  // connections without it. Read it on every connect, since a relaunch
+  // (after the daemon restarted) brings a new one.
+  function launchParams() {
+    try {
+      return JSON.parse((window.PalmSystem && window.PalmSystem.launchParams) || '{}') || {};
+    } catch (err) {
+      return {};
+    }
+  }
+
   function connect() {
-    ws = new WebSocket(WS_URL);
+    var key = launchParams().key;
+    if (!key || ws) {
+      return; // opened by hand, not by the daemon; or already connected
+    }
+    ws = new WebSocket(WS_URL + '/?key=' + encodeURIComponent(key));
     ws.onmessage = function (e) {
       try {
         onEvent(JSON.parse(e.data));
@@ -193,13 +208,14 @@
 
   // Launched again while open: the daemon starts a new session and replays it.
   document.addEventListener('webOSRelaunch', function () {
+    connect();
     reset();
     setState('listening', 'Listening…');
     setFace('waking');
   });
 
-  // Launched with {"demo": true}: cycle through faces and report the frame
-  // rate to the daemon log, to check the animation runs smoothly on the TV.
+  // Launched with {"demo": true}: cycle through faces and show the frame
+  // rate, to check the animation runs smoothly on the TV.
   function demo() {
     var states = ['listening', 'dictating', 'thinking', 'working', 'happy', 'laughing',
       'curious', 'confused', 'excited', 'proud', 'sad', 'searching', 'powering-down'];
@@ -216,7 +232,6 @@
     setInterval(function () {
       var now = Date.now();
       var fps = Math.round(frames * 1000 / (now - last));
-      send({ type: 'log', msg: 'demo: ' + face + ' ' + fps + ' fps' });
       frames = 0;
       last = now;
       statusEl.textContent = face + ' · ' + fps + ' fps';
@@ -225,12 +240,7 @@
     setFace(states[i++]);
   }
 
-  var params = {};
-  try {
-    params = JSON.parse((window.PalmSystem && window.PalmSystem.launchParams) || '{}') || {};
-  } catch (err) {
-    // no launch params
-  }
+  var params = launchParams();
   connect();
   if (params.demo) {
     demo();

@@ -4,9 +4,12 @@ package bridge
 
 import (
 	"bufio"
+	"crypto/rand"
 	"crypto/sha1"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"io"
@@ -26,6 +29,11 @@ const wsGUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 type Hub struct {
 	OnMessage func(msg map[string]any)
 
+	// Key is a secret made when the daemon starts. The overlay gets it in
+	// its launch params and must present it to connect: an origin check
+	// alone can be passed by a web page in a sandboxed frame ("null").
+	Key string
+
 	mux     *http.ServeMux
 	mu      sync.Mutex
 	clients map[*wsConn]bool
@@ -34,7 +42,9 @@ type Hub struct {
 
 // NewHub returns an empty hub.
 func NewHub() *Hub {
-	h := &Hub{clients: map[*wsConn]bool{}, mux: http.NewServeMux()}
+	var b [16]byte
+	rand.Read(b[:])
+	h := &Hub{Key: hex.EncodeToString(b[:]), clients: map[*wsConn]bool{}, mux: http.NewServeMux()}
 	h.mux.HandleFunc("/", h.serveWS)
 	return h
 }
@@ -126,6 +136,11 @@ func (h *Hub) serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 	if origin := r.Header.Get("Origin"); !overlayOrigin(origin) {
 		log.Printf("bridge: refused WebSocket from origin %q", origin)
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+	if subtle.ConstantTimeCompare([]byte(r.URL.Query().Get("key")), []byte(h.Key)) != 1 {
+		log.Printf("bridge: refused WebSocket without the key")
 		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
