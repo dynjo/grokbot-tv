@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"grokbot/internal/botapi"
-	"grokbot/internal/bridge"
-	"grokbot/internal/remote"
-	"grokbot/internal/speaker"
-	"grokbot/internal/xai"
+	"github.com/dynjo/grokbot-tv/internal/botapi"
+	"github.com/dynjo/grokbot-tv/internal/bridge"
+	"github.com/dynjo/grokbot-tv/internal/remote"
+	"github.com/dynjo/grokbot-tv/internal/speaker"
+	"github.com/dynjo/grokbot-tv/internal/xai"
 )
 
 // The remote mic is read in 80 ms chunks.

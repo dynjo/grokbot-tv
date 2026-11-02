@@ -8,8 +8,8 @@ import (
 	"time"
 	"unicode"
 
-	"grokbot/internal/bridge"
-	"grokbot/internal/xai"
+	"github.com/dynjo/grokbot-tv/internal/bridge"
+	"github.com/dynjo/grokbot-tv/internal/xai"
 )
 
 func tool(name, desc string, props map[string]any, required ...string) xai.Tool {

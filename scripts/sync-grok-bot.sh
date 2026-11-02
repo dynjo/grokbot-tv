@@ -2,14 +2,14 @@
 # Copy the Grok Bot app's sign-in from this Mac to the TV, so grokbot can
 # pass requests to your Grok Bot agent (grok_bot in config.json).
 #
-#   TV=root@10.235.1.98 ./scripts/sync-grok-bot.sh
+#   TV=root@192.168.1.50 ./scripts/sync-grok-bot.sh
 #
 # The sign-in is read from the app's encrypted store with its Keychain key
 # (macOS may ask to allow access to "Grok Bot Safe Storage"). It lasts a few
 # weeks; run this again when the TV says it has expired. The TV never
 # renews it, so the app stays signed in.
 set -e
-TV=${TV:-root@10.235.1.98}
+: "${TV:?set TV, e.g. TV=root@192.168.1.50}"
 DEST=/home/root/.config/grokbot/grok-bot-auth.json
 
 node --input-type=module -e '

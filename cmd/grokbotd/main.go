@@ -15,9 +15,9 @@ import (
 	"syscall"
 	"time"
 
-	"grokbot/internal/assistant"
-	"grokbot/internal/bridge"
-	"grokbot/internal/remote"
+	"github.com/dynjo/grokbot-tv/internal/assistant"
+	"github.com/dynjo/grokbot-tv/internal/bridge"
+	"github.com/dynjo/grokbot-tv/internal/remote"
 )
 
 func main() {

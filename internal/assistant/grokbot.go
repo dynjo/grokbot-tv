@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"grokbot/internal/botapi"
-	"grokbot/internal/bridge"
-	"grokbot/internal/xai"
+	"github.com/dynjo/grokbot-tv/internal/botapi"
+	"github.com/dynjo/grokbot-tv/internal/bridge"
+	"github.com/dynjo/grokbot-tv/internal/xai"
 )
 
 // With grok_bot configured, the TV is a voice front end for the user's own

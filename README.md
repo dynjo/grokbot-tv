@@ -4,6 +4,8 @@ A push-to-talk Grok assistant for rooted LG webOS TVs. Hold the Magic Remote's V
 
 It replaces LG's own voice assistant. While grokbot runs, the Voice button only opens grokbot.
 
+> An unofficial hobby project, not affiliated with or endorsed by xAI, LG or Cursor. "Grok" and "Grok Bot" are trademarks of xAI, and "LG", "webOS" and "Magic Remote" are trademarks of LG Electronics. Rooting your TV may void its warranty. The optional Grok Bot integration uses undocumented endpoints and the app's own sign-in, which may be against its terms of service. Use at your own risk.
+
 ```
 Voice button ─ syslog (lginput2 KEY_VOICE) ─▶ grokbotd ─┬─ voiceinput/startStreaming ─▶ remote mic PCM (unix socket)
                                                          ├─ xAI /v1/stt ─▶ /v1/chat/completions (+ TV tools) ─▶ /v1/tts
@@ -80,7 +82,7 @@ The component's geometry is derived from x.ai's public site and comes without a 
 ```sh
 ./scripts/build-face.sh                                   # only when grokbot-animation changes
 ./scripts/build.sh                                        # build/grokbotd + overlay .ipk
-XAI_API_KEY=xai-... TV=root@10.235.1.98 ./scripts/deploy.sh
+XAI_API_KEY=xai-... TV=root@<tv> ./scripts/deploy.sh
 ```
 
 `deploy.sh` copies everything to `/home/root/grokbot`. It installs the overlay app and adds `/var/lib/webosbrew/init.d/50-grokbot`, so the daemon starts at boot. On first install it writes `/home/root/.config/grokbot/config.json`. To apply changes, edit that file and run `sh /home/root/grokbot/run.sh stop; sh /home/root/grokbot/run.sh start`.
@@ -92,7 +94,7 @@ tail -f /tmp/grokbot.log                       # sessions, transcripts, answers,
 wget -qO- http://127.0.0.1:8679/status         # busy, overlays connected
 wget -qO- --post-data= http://127.0.0.1:8679/trigger   # start a session without the button (the remote must be awake)
 luna-send -n 1 luna://com.webos.applicationManager/launch '{"id":"com.grokbot.overlay","params":{"demo":true}}'
-                                               # cycle the face through its states and log the frame rate
+                                               # cycle the face through its states and show the frame rate
 ```
 
 To uninstall: run `sh /home/root/grokbot/run.sh stop` (this restores LG's assistant), then `rm -r /home/root/grokbot /var/lib/webosbrew/init.d/50-grokbot`, and remove the "Grokbot" app.
@@ -129,3 +131,7 @@ The overlay can be inspected with Chrome DevTools at `http://<tv>:9998` while it
 - Only button presses are visible, not releases, so recording ends on silence, a second press, or `max_listen_sec`.
 - One press starts a conversation, and the remote mic stays on until it ends. Closing and reopening the mic leaves voiceinput "already capturing" for a few seconds, so follow-ups reuse the open stream. A press while Grok answers interrupts it and listens again.
 - Reference: [gprot42/webos-launch-home](https://github.com/gprot42/webos-launch-home).
+
+## License
+
+MIT, see [LICENSE](LICENSE). This doesn't cover `overlay/js/vendor/morph-bot.js`, which is built from [grokbot-animation](https://github.com/iduu/grokbot-animation) and has no license (see Face).

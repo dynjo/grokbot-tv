@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"grokbot/internal/bridge"
-	"grokbot/internal/xai"
+	"github.com/dynjo/grokbot-tv/internal/bridge"
+	"github.com/dynjo/grokbot-tv/internal/xai"
 )
 
 func TestMatchApp(t *testing.T) {

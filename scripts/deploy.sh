@@ -9,7 +9,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-TV=${TV:-root@10.235.1.98}
+: "${TV:?set TV, e.g. TV=root@192.168.1.50}"
 DEST=/home/root/grokbot
 CONF_DIR=/home/root/.config/grokbot
 HOOK=/var/lib/webosbrew/init.d/50-grokbot

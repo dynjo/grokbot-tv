@@ -1,3 +1,5 @@
 build/
 *.ipk
 .DS_Store
+config.json
+grok-bot-auth.json
